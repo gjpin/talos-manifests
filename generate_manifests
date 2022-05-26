@@ -18,6 +18,19 @@ generate_calico_manifest(){
 
         sed -i 's|# - name: CALICO_IPV4POOL_CIDR|- name: CALICO_IPV4POOL_CIDR|' manifests/calico-${CALICO_VERSION}.yaml
         sed -i 's|#   value: "192.168.0.0/16"|  value: "10.244.0.0/16"|' manifests/calico-${CALICO_VERSION}.yaml
+
+
+
+
+# https://docs.projectcalico.org/getting-started/kubernetes/installation/config-options
+#         sed -i 's|CALICO_IPV4POOL_IPIP|CALICO_IPV4POOL_VXLAN|' manifests/calico-${CALICO_VERSION}.yaml
+#             # Enable IPIP
+#             - name: CALICO_IPV4POOL_IPIP
+#               value: "Always"
+#             # Enable or Disable VXLAN on the default IP pool.
+#             - name: CALICO_IPV4POOL_VXLAN
+#               value: "Never"
+        
     fi
 }
 
