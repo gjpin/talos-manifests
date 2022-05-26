@@ -8,9 +8,11 @@ generate_calico_manifest(){
     # Download Calico upstream manifest if a local copy does not exist and
     # replace CALICO_IPV4POOL_CIDR with Talos default pod subnet (10.244.0.0/16)
 
+    # https://projectcalico.docs.tigera.io/getting-started/kubernetes/self-managed-onprem/onpremises
+
     if [ ! -f manifests/calico-${CALICO_VERSION}.yaml ]
     then
-	    curl -sSL https://docs.projectcalico.org/archive/${CALICO_VERSION}/manifests/calico.yaml \
+	    curl -sSL https://docs.projectcalico.org/archive/${CALICO_VERSION}/manifests/calico-typha.yaml \
             -o manifests/calico-${CALICO_VERSION}.yaml
 
         sed -i 's|# - name: CALICO_IPV4POOL_CIDR|- name: CALICO_IPV4POOL_CIDR|' manifests/calico-${CALICO_VERSION}.yaml
