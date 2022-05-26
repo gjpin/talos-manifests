@@ -9,6 +9,7 @@ generate_calico_manifest(){
     # replace CALICO_IPV4POOL_CIDR with Talos default pod subnet (10.244.0.0/16)
 
     # https://projectcalico.docs.tigera.io/getting-started/kubernetes/self-managed-onprem/onpremises
+    # https://projectcalico.docs.tigera.io/reference/typha/
 
     if [ ! -f manifests/calico-${CALICO_VERSION}.yaml ]
     then
