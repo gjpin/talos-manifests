@@ -10,7 +10,7 @@ data:
   # You must set a non-zero value for Typha replicas below.
   typha_service_name: "calico-typha"
   # Configure the backend to use.
-  calico_backend: "vxlan"
+  calico_backend: "bird"
 
   # Configure the MTU to use for workload interfaces and tunnels.
   # By default, MTU is auto-detected, and explicitly setting this field should not be required.
@@ -32,7 +32,13 @@ data:
           "nodename": "__KUBERNETES_NODE_NAME__",
           "mtu": __CNI_MTU__,
           "ipam": {
-              "type": "calico-ipam"
+              "type": "host-local",
+              "ranges": [
+                [
+                  { "subnet": "usePodCidr" }
+                ],
+                  { "subnet": "usePodCidrIPv6" }
+              ]
           },
           "policy": {
               "type": "k8s"
@@ -4348,6 +4354,8 @@ spec:
             value: "kubernetes"
           - name: TYPHA_HEALTHENABLED
             value: "true"
+          - name: USE_POD_CIDR
+            value: "true"
           # Uncomment these lines to enable prometheus metrics. Since Typha is host-networked,
           # this opens a port on the host, which may need to be secured.
           #- name: TYPHA_PROMETHEUSMETRICSENABLED
@@ -4543,11 +4551,11 @@ spec:
             - name: IP
               value: "autodetect"
             # Enable IPIP
-            # - name: CALICO_IPV4POOL_IPIP
-            #   value: "Never"
+            - name: CALICO_IPV4POOL_IPIP
+              value: "Always"
             # Enable or Disable VXLAN on the default IP pool.
             - name: CALICO_IPV4POOL_VXLAN
-              value: "Always"
+              value: "Never"
             # Enable or Disable VXLAN on the default IPv6 IP pool.
             - name: CALICO_IPV6POOL_VXLAN
               value: "Never"
@@ -4585,6 +4593,8 @@ spec:
               value: "false"
             - name: FELIX_HEALTHENABLED
               value: "true"
+            - name: USE_POD_CIDR
+              value: "true"
           securityContext:
             privileged: true
           resources:
@@ -4601,7 +4611,7 @@ spec:
               command:
               - /bin/calico-node
               - -felix-live
-              # - -bird-live
+              - -bird-live
             periodSeconds: 10
             initialDelaySeconds: 10
             failureThreshold: 6
@@ -4611,7 +4621,7 @@ spec:
               command:
               - /bin/calico-node
               - -felix-ready
-              # - -bird-ready
+              - -bird-ready
             periodSeconds: 10
             timeoutSeconds: 10
           volumeMounts:
