@@ -1,0 +1,30 @@
+#!/bin/bash
+set -eu -o pipefail
+ 
+# Versions
+CALICO_VERSION="v3.23" # https://github.com/projectcalico/calico
+
+generate_calico_manifest(){
+    # Download Calico upstream manifest if a local copy does not exist and
+    # replace CALICO_IPV4POOL_CIDR with Talos default pod subnet (10.244.0.0/16)
+
+    if [ ! -f manifests/calico-${CALICO_VERSION}.yaml ]
+    then
+	    curl -sSL https://docs.projectcalico.org/archive/${CALICO_VERSION}/manifests/calico.yaml \
+            -o manifests/calico-${CALICO_VERSION}.yaml
+
+        sed -i 's|# - name: CALICO_IPV4POOL_CIDR|- name: CALICO_IPV4POOL_CIDR|' manifests/calico-${CALICO_VERSION}.yaml
+        sed -i 's|#   value: "192.168.0.0/16"|  value: "10.244.0.0/16"|' manifests/calico-${CALICO_VERSION}.yaml
+    fi
+}
+
+main(){
+    generate_calico_manifest
+}
+
+main $@
+if [ $? -ne 0 ]; then
+    exit 1
+else
+    exit 0
+fi
